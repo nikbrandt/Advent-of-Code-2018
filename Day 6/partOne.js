@@ -16,19 +16,19 @@ input.forEach(text => {
     coordinates.push( { x, y, areaNum: 0 } );
 });
 
-largest[0] += 500;
-largest[1] += 500;
-
 let grid = [[], [], []];
+let under10k = 0;
 
 for (let i = 0; i <= largest[1]; i++) {
     grid.push([]);
-    for (let j = -1; j <= largest[0]; j++) {
+    for (let j = 0; j <= largest[0]; j++) {
         grid[i].push({ x: j, y: i, closest: null });
         let closest = [Number.MAX_VALUE, -1]; // distance, coordinate number
+        let totalDistance = 0;
         for (let k = 0; k < coordinates.length; k++) {
             let distanceToK = Math.abs(j - coordinates[k].x) + Math.abs(i - coordinates[k].y);
-            
+            totalDistance += distanceToK;
+
             if (distanceToK < closest[0]) {
                 closest[0] = distanceToK;
                 closest[1] = k;
@@ -38,13 +38,45 @@ for (let i = 0; i <= largest[1]; i++) {
             }
         }
         grid[i][j].closest = closest;
+        if (totalDistance < 10000) under10k++;
         if (closest[1] !== null) coordinates[closest[1]].areaNum++;
     }
 }
 
 let biggest = [0, 0]; // amount, coord num
-coordinates.forEach(coords => {
-    if (coords.areaNum > biggest[0]) biggest = [ coords.areaNum, coords ];
+coordinates.forEach((coords, iterator) => {
+    if (coords.areaNum > biggest[0]) {
+        let infinite = false;
+        for (let i = 0; i < largest[0]; i++) { /// check along top
+            if (grid[0][i].closest[1] === iterator) {
+                infinite = true;
+                break;
+            }
+        }
+
+        for (let i = 1; i < largest[1]; i++) { // check left side
+            if (grid[i][0].closest[1] === iterator) {
+                infinite = true;
+                break;
+            }
+        }
+
+        for (let i = 0; i < largest[0]; i++) { // check bottom
+            if (grid[largest[1] - 1][i].closest[1] === iterator) {
+                infinite = true;
+                break;
+            }
+        }
+
+        for (let i = 0; i < largest[1]; i++) { // check right side
+            if (grid[i][largest[0] - 1].closest[1] === iterator) {
+                infinite = true;
+                break;
+            }
+        }
+
+        if (!infinite) biggest = [ coords.areaNum, coords ];
+    }
 })
 
 let alphabet = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'.split('');
@@ -59,7 +91,7 @@ for (let i = 0; i <= largest[0]; i++) {
     else tempArr[0] += 0;
     if (i > 9) tempArr[1] += Math.floor(i / 10);
     else tempArr[1] += 0;
-    tempArr[1] += i % 10;
+    tempArr[2] += i % 10;
 }
 
 tempString += tempArr[0] + '\r\n' + tempArr[1] + '\r\n' + tempArr[2] + '\r\n';
@@ -77,6 +109,7 @@ grid.forEach(arr => {
 fs.writeFileSync('output.txt', tempString);
 
 console.log(`Biggest area is: ${biggest[0]} - x: ${biggest[1].x}, y: ${biggest[1].y}`);
+console.log(`There are ${under10k} locations with total distance to all coordinates under 10000.`);
 
 // incorrect: 10497
 
