@@ -84,20 +84,24 @@ let alphabetUpper = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg
 
 let tempString = '';
 
-let tempArr = ['', '', ''];
+// let tempArr = [/*'', '', ''*/];
 
-for (let i = 0; i <= largest[0]; i++) {
+let shrinkFactor = 3;
+
+/* for (let i = 0; i <= largest[0]; i += shrinkFactor) {
     if (i > 99) tempArr[0] += Math.floor(i / 100);
     else tempArr[0] += 0;
     if (i > 9) tempArr[1] += Math.floor(i % 100 / 10);
     else tempArr[1] += 0;
     tempArr[2] += i % 10;
-}
+} 
 
-tempString += tempArr[0] + '\r\n' + tempArr[1] + '\r\n' + tempArr[2] + '\r\n';
+tempString += tempArr[0] + '\r\n' + tempArr[1] + '\r\n' + tempArr[2] + '\r\n'; */
 
-grid.forEach(arr => {
-    arr.forEach(coo => {
+grid.forEach((arr, i) => {
+    if (i % shrinkFactor !== 0) return;
+    arr.forEach((coo, j) => {
+        if (j % shrinkFactor !== 0) return;
         if (coo.closest[0] === 0) {
             tempString += alphabetUpper[coo.closest[1]];
         }
