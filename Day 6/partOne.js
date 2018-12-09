@@ -89,7 +89,7 @@ let tempArr = ['', '', ''];
 for (let i = 0; i <= largest[0]; i++) {
     if (i > 99) tempArr[0] += Math.floor(i / 100);
     else tempArr[0] += 0;
-    if (i > 9) tempArr[1] += Math.floor(i / 10);
+    if (i > 9) tempArr[1] += Math.floor(i % 100 / 10);
     else tempArr[1] += 0;
     tempArr[2] += i % 10;
 }
