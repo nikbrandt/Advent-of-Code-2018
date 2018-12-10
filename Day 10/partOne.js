@@ -8,18 +8,14 @@ let input = fs.readFileSync('input.txt').toString().split('\n').slice(0, -1)
 
 let min = Number.MAX_VALUE;
 let i = 0;
-let stop = false;
 while (true) {
     let max = Number.MIN_VALUE;
     input.forEach(obj => {
         obj.x += obj.xV;
         obj.y += obj.yV;
-        // console.log(obj.x);
         if (Math.abs(obj.y) > max) max = Math.abs(obj.y);
-        // writeGrid();
     });
 
-    console.log(max);
     if (max < min) min = max;
     else {
         input.forEach(obj => {
@@ -28,72 +24,46 @@ while (true) {
         });
         break;
     };
-
-    /*if (stop) break;
-    if (max < min) min = max;
-    else {
-        stop = true;
-        continue;
-    };
-    console.log(max);
-    // if (max < 100) break; */
     i++
 }
 
-console.log(`got to ${i} iterator`);
+let minX = Number.MAX_VALUE;
+let minY = Number.MAX_VALUE;
+let maxX = Number.MIN_VALUE;
+let maxY = Number.MIN_VALUE;
 
-// console.log(input);
-writeGrid();
+input.forEach(obj => {
+    if (obj.x < minX) minX = obj.x;
+    if (obj.y < minY) minY = obj.y;
+    if (obj.x > maxX) maxX = obj.x;
+    if (obj.y > maxY) maxY = obj.y;
+});
 
-function writeGrid() {
-    let minX = Number.MAX_VALUE;
-    let minY = Number.MAX_VALUE;
-    let maxX = Number.MIN_VALUE;
-    let maxY = Number.MIN_VALUE;
-    input.forEach(obj => {
-        if (obj.x < minX) minX = obj.x;
-        if (obj.y < minY) minY = obj.y;
-        if (obj.x > maxX) maxX = obj.x;
-        if (obj.y > maxY) maxY = obj.y;
-    });
+let grid = [];
 
-    let newInput = input.map(obj => {
-        return { x: Math.abs(minX) + obj.x, y: Math.abs(minY) + obj.y };
-    });
+let totalX = Math.abs(maxX) + 2;
+let totalY = Math.abs(maxY) + 2;
 
-    console.log(`${minX} ${maxX} ${minY} ${maxY}`);
-    
-    let grid = [];
-    
-    let totalX = Math.abs(minX) + Math.abs(maxX) + 2;
-    let totalY = Math.abs(minY) + Math.abs(maxY) + 2;
-
-    // let shrinkFactor = 10;
-
-    console.log(totalX + ' uh ' + totalY);
-    for (let i = 0; i < totalY; i++) {
-        grid.push([]);
-        for (let j = 0; j < totalX; j++) {
-            grid[i].push('.');
-        }
+for (let i = 0; i < totalY; i++) {
+    grid.push([]);
+    for (let j = 0; j < totalX; j++) {
+        grid[i].push('.');
     }
-    
-    newInput.forEach(obj => {
-        // console.log(obj);
-        grid[obj.y][obj.x] = '#';
-    });
-    
-    let string = '';
-    
-    for (let i = 0; i < totalY; i++) {
-        for (let j = 0; j < totalX; j++) {
-            string += grid[i][j];
-        }
-        string += '\n';
-    }
-    
-    fs.writeFileSync('output.txt', string);
 }
 
+input.forEach(obj => grid[obj.y][obj.x] = '#');
 
-console.log('written.');
+if (minY > 0) grid = grid.slice(minY - 1);
+if (minX > 0) grid = grid.map(arr => arr.slice(minX - 1));
+
+let string = '';
+
+for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[0].length; j++) {
+        string += grid[i][j];
+    }
+    string += '\n';
+}
+
+console.log(string);
+console.log('After %s seconds.', i);
